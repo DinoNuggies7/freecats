@@ -11,7 +11,7 @@ typedef struct {
 	SDL_Renderer* renderer;
 	SDL_Texture* texture;
 } GifWindow;
-// unsigned int tracklist[44];
+unsigned int tracklist[44];
 unsigned int memes = 0;
 unsigned int memeLimit = 44;
 GifWindow meme[44];
@@ -27,8 +27,8 @@ void spawnMeme() {
 	meme[memes].timer = 0;
 	meme[memes].delay = rand() % 100;
 	meme[memes].frames = 14;
-	meme[memes].gif = gifs[memes];
-	meme[memes].gif_len = gifs_len[memes];
+	meme[memes].gif = gifs[tracklist[memes]];
+	meme[memes].gif_len = gifs_len[tracklist[memes]];
 	meme[memes].window = SDL_CreateWindow("amogus", meme[memes].x, meme[memes].y, meme[memes].w, meme[memes].h, SDL_WINDOW_BORDERLESS);
 	meme[memes].renderer = SDL_CreateRenderer(meme[memes].window, -1, SDL_RENDERER_PRESENTVSYNC);
 	meme[memes].texture = IMG_LoadTexture_RW(meme[memes].renderer, SDL_RWFromConstMem(meme[memes].gif[0], meme[memes].gif_len[0]), 1);
@@ -60,18 +60,6 @@ void renderMeme(int i) {
 	SDL_RenderPresent(meme[i].renderer);	
 }
 
-void shuffle(int *array, size_t n) {
-	if (n > 1) {
-		size_t i;
-		for (i = 0; i < n - 1; i++) {
-		  size_t j = i + rand() / (43 / (n - i) + 1);
-		  int t = array[j];
-		  array[j] = array[i];
-		  array[i] = t;
-		}
-	}
-}
-
 int main() {
 
 	// Init SDL and Set Random Seed
@@ -79,10 +67,22 @@ int main() {
 	srand(time(NULL));
 
 	// Shuffle the Order of Memes
-	// for (int i = 0; i < 44; i++) {
-	// 	tracklist[i] = i;
-	// }
-	// shuffle(tracklist, 44);
+	for (int i = 0; i < memeLimit; i++) {
+		tracklist[i] = i;
+	}
+	if (memeLimit > 1) {
+		unsigned int _tmp[memeLimit];
+		for (int i = 0; i < memeLimit; i++) {
+			unsigned int _rand = rand() % memeLimit;
+			for (int j = 0; j < i; j++) {
+				while (_rand == _tmp[j]) {
+					_rand = rand() % memeLimit;
+				}
+			}
+			tracklist[i] = _rand;
+			_tmp[i] = _rand;
+		}
+	}
 
 	// Main Loop
 	bool quit = false;
