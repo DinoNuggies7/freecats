@@ -60,8 +60,11 @@ void renderMeme(int i) {
 	SDL_RenderPresent(meme[i].renderer);	
 }
 
-int main() {
-
+#ifdef _WIN32
+int WinMain(int argc, char* argv[]) {
+#else
+int main(int argc, char* argv[]) {
+#endif
 	// Init SDL and Set Random Seed
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
@@ -88,7 +91,7 @@ int main() {
 	bool quit = false;
 	while (!quit) {
 		SDL_GetCurrentDisplayMode(0, &screen);
-		SDL_Event e; while (SDL_PollEvent(&e)) { if(e.type == SDL_QUIT) quit = true; }
+		SDL_Event e; while (SDL_PollEvent(&e)) { if(e.type == SDL_QUIT || e.type == SDL_KEYDOWN) quit = true; }
 
 		// Spawn a Window/Meme every 2 seconds
 		unsigned int ticks = SDL_GetTicks() / 2000;
@@ -102,5 +105,6 @@ int main() {
 		}
 	}
 
+	SDL_Quit();
 	return 0;
 }
