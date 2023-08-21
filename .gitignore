@@ -1,0 +1,5 @@
+# Build Files
+*.o
+*.a
+*.out
+*.gch
