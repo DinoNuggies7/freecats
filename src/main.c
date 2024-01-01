@@ -1,4 +1,4 @@
-#include "main.h"
+#include "gifdata.h" // change to testdata.h for debugging, it only includes 3 gifs
 
 SDL_DisplayMode screen;
 
@@ -11,48 +11,44 @@ typedef struct {
 	SDL_Renderer* renderer;
 	SDL_Texture* texture;
 } GifWindow;
-unsigned int tracklist[44];
-unsigned int memes = 0;
-unsigned int memeLimit = 44;
-GifWindow meme[44];
+int memes = 0;
+int tracklist[MEMELIMIT];
+GifWindow meme[MEMELIMIT];
 
 void spawnMeme() {
 	meme[memes].x = 0;
 	meme[memes].y = 0;
-	meme[memes].speed = rand() % 15 + 5;
+	meme[memes].speed = rand() % 5 + 5;
 	meme[memes].vx = meme[memes].speed;
 	meme[memes].vy = meme[memes].speed;
 	meme[memes].w = rand() % 256 + 256;
 	meme[memes].h = rand() % 256 + 256;
 	meme[memes].timer = 0;
-	meme[memes].delay = rand() % 100;
-	meme[memes].frames = 14;
+	meme[memes].delay = 100;
+	meme[memes].frames = (int)gifs_frames[tracklist[memes]];
 	meme[memes].gif = gifs[tracklist[memes]];
 	meme[memes].gif_len = gifs_len[tracklist[memes]];
-	meme[memes].window = SDL_CreateWindow("amogus", meme[memes].x, meme[memes].y, meme[memes].w, meme[memes].h, SDL_WINDOW_BORDERLESS);
+	meme[memes].window = SDL_CreateWindow("kitty cat :>", meme[memes].x, meme[memes].y, meme[memes].w, meme[memes].h, SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALWAYS_ON_TOP);
 	meme[memes].renderer = SDL_CreateRenderer(meme[memes].window, -1, SDL_RENDERER_PRESENTVSYNC);
 	meme[memes].texture = IMG_LoadTexture_RW(meme[memes].renderer, SDL_RWFromConstMem(meme[memes].gif[0], meme[memes].gif_len[0]), 1);
 	memes++;
 }
 
 void renderMeme(int i) {
-	if (meme[i].x < 0) {
+	if (meme[i].x < 0)
 		meme[i].vx = meme[i].speed;
-	}
-	else if (meme[i].x > screen.w - meme[i].w) {
+	else if (meme[i].x > screen.w - meme[i].w)
 		meme[i].vx = -meme[i].speed;
-	}
-	if (meme[i].y < 0) {
+	if (meme[i].y < 0)
 		meme[i].vy = meme[i].speed;
-	}
-	else if (meme[i].y > screen.h - meme[i].h) {
+	else if (meme[i].y > screen.h - meme[i].h)
 		meme[i].vy = -meme[i].speed;
-	}
 	meme[i].x += meme[i].vx;
 	meme[i].y += meme[i].vy;
 	SDL_SetWindowPosition(meme[i].window, meme[i].x, meme[i].y);
 
-	meme[i].timer = SDL_GetTicks() / meme[i].delay % 14;
+	meme[i].timer = SDL_GetTicks() / meme[i].delay % meme[i].frames;
+	SDL_DestroyTexture(meme[i].texture);
 	meme[i].texture = IMG_LoadTexture_RW(meme[i].renderer, SDL_RWFromConstMem(meme[i].gif[meme[i].timer], meme[i].gif_len[meme[i].timer]), 1);
 	
 	SDL_RenderClear(meme[i].renderer);
@@ -60,26 +56,22 @@ void renderMeme(int i) {
 	SDL_RenderPresent(meme[i].renderer);	
 }
 
-#ifdef _WIN32
-int WinMain(int argc, char* argv[]) {
-#else
-int main(int argc, char* argv[]) {
-#endif
+int main(int argc, char** argv) {
 	// Init SDL and Set Random Seed
 	SDL_Init(SDL_INIT_VIDEO);
 	srand(time(NULL));
 
 	// Shuffle the Order of Memes
-	for (int i = 0; i < memeLimit; i++) {
+	for (int i = 0; i < MEMELIMIT; i++) {
 		tracklist[i] = i;
 	}
-	if (memeLimit > 1) {
-		unsigned int _tmp[memeLimit];
-		for (int i = 0; i < memeLimit; i++) {
-			unsigned int _rand = rand() % memeLimit;
+	if (MEMELIMIT > 1) {
+		int _tmp[MEMELIMIT];
+		for (int i = 0; i < MEMELIMIT; i++) {
+			int _rand = rand() % MEMELIMIT;
 			for (int j = 0; j < i; j++) {
 				while (_rand == _tmp[j]) {
-					_rand = rand() % memeLimit;
+					_rand = rand() % MEMELIMIT;
 					j = 0;
 				}
 			}
@@ -89,14 +81,18 @@ int main(int argc, char* argv[]) {
 	}
 
 	// Main Loop
+	// SDL_Event event;
 	bool quit = false;
 	while (!quit) {
 		SDL_GetCurrentDisplayMode(0, &screen);
-		SDL_Event e; while (SDL_PollEvent(&e)) { if(e.type == SDL_QUIT) quit = true; }
+		// while (SDL_PollEvent(&event)) { // Comment for release, so you can't close it
+		// 	if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+		// 		quit = true;
+		// }
 
 		// Spawn a Window/Meme every 2 seconds
-		unsigned int ticks = SDL_GetTicks() / 2000;
-		if (ticks != memes && memes < memeLimit) {
+		int ticks = SDL_GetTicks() / 5000;
+		if (ticks >= memes && memes < MEMELIMIT) {
 			spawnMeme();
 		}
 
@@ -106,6 +102,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 
+	for (int i = 0; i < MEMELIMIT; i++) {
+		SDL_DestroyWindow(meme[i].window);
+		SDL_DestroyRenderer(meme[i].renderer);
+		SDL_DestroyTexture(meme[i].texture);
+	}
+
 	SDL_Quit();
 	return 0;
+}
+
+int WinMain(int argc, char** argv) {
+	return main(argc, argv);
 }

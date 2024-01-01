@@ -41,10 +41,18 @@
 #include "gif40.h"
 #include "gif41.h"
 #include "gif42.h"
-#include "gif43.h"
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <time.h>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+#define MEMELIMIT 43
 
 // Giant Array of Gifs
-unsigned char** gifs[44] = {
+unsigned char** gifs[MEMELIMIT] = {
 	gif0,
 	gif1,
 	gif2,
@@ -88,10 +96,9 @@ unsigned char** gifs[44] = {
 	gif40,
 	gif41,
 	gif42,
-	gif43,
 };
 
-unsigned int* gifs_len[44] = {
+unsigned int* gifs_len[MEMELIMIT] = {
 	gif0_len,
 	gif1_len,
 	gif2_len,
@@ -135,5 +142,50 @@ unsigned int* gifs_len[44] = {
 	gif40_len,
 	gif41_len,
 	gif42_len,
-	gif43_len,
+};
+
+size_t gifs_frames[MEMELIMIT] = {
+	sizeof(gif0_len) / sizeof(gif0_len[0]),
+	sizeof(gif1_len) / sizeof(gif1_len[0]),
+	sizeof(gif2_len) / sizeof(gif2_len[0]),
+	sizeof(gif3_len) / sizeof(gif3_len[0]),
+	sizeof(gif4_len) / sizeof(gif4_len[0]),
+	sizeof(gif5_len) / sizeof(gif5_len[0]),
+	sizeof(gif6_len) / sizeof(gif6_len[0]),
+	sizeof(gif7_len) / sizeof(gif7_len[0]),
+	sizeof(gif8_len) / sizeof(gif8_len[0]),
+	sizeof(gif9_len) / sizeof(gif9_len[0]),
+	sizeof(gif10_len) / sizeof(gif10_len[0]),
+	sizeof(gif11_len) / sizeof(gif11_len[0]),
+	sizeof(gif12_len) / sizeof(gif12_len[0]),
+	sizeof(gif13_len) / sizeof(gif13_len[0]),
+	sizeof(gif14_len) / sizeof(gif14_len[0]),
+	sizeof(gif15_len) / sizeof(gif15_len[0]),
+	sizeof(gif16_len) / sizeof(gif16_len[0]),
+	sizeof(gif17_len) / sizeof(gif17_len[0]),
+	sizeof(gif18_len) / sizeof(gif18_len[0]),
+	sizeof(gif19_len) / sizeof(gif19_len[0]),
+	sizeof(gif20_len) / sizeof(gif20_len[0]),
+	sizeof(gif21_len) / sizeof(gif21_len[0]),
+	sizeof(gif22_len) / sizeof(gif22_len[0]),
+	sizeof(gif23_len) / sizeof(gif23_len[0]),
+	sizeof(gif24_len) / sizeof(gif24_len[0]),
+	sizeof(gif25_len) / sizeof(gif25_len[0]),
+	sizeof(gif26_len) / sizeof(gif26_len[0]),
+	sizeof(gif27_len) / sizeof(gif27_len[0]),
+	sizeof(gif28_len) / sizeof(gif28_len[0]),
+	sizeof(gif29_len) / sizeof(gif29_len[0]),
+	sizeof(gif30_len) / sizeof(gif30_len[0]),
+	sizeof(gif31_len) / sizeof(gif31_len[0]),
+	sizeof(gif32_len) / sizeof(gif32_len[0]),
+	sizeof(gif33_len) / sizeof(gif33_len[0]),
+	sizeof(gif34_len) / sizeof(gif34_len[0]),
+	sizeof(gif35_len) / sizeof(gif35_len[0]),
+	sizeof(gif36_len) / sizeof(gif36_len[0]),
+	sizeof(gif37_len) / sizeof(gif37_len[0]),
+	sizeof(gif38_len) / sizeof(gif38_len[0]),
+	sizeof(gif39_len) / sizeof(gif39_len[0]),
+	sizeof(gif40_len) / sizeof(gif40_len[0]),
+	sizeof(gif41_len) / sizeof(gif41_len[0]),
+	sizeof(gif42_len) / sizeof(gif42_len[0]),
 };
