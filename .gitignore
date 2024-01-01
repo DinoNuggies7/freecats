@@ -1,5 +1,5 @@
 # Config Files
-.vscode/*
+.vscode
 
 # Build Files
 *.o
