@@ -29,17 +29,25 @@ void spawnMeme() {
 	meme[memes].speed = rand() % 5 + 5;
 	meme[memes].vx = meme[memes].speed;
 	meme[memes].vy = meme[memes].speed;
-	bool done = false;
-	while (!done) {
-		done = true;
-		meme[memes].w = rand() % 300 + 100;
-		meme[memes].h = rand() % 300 + 100;
-		meme[memes].x = rand() % (screen.w - meme[memes].w);
-		meme[memes].y = rand() % (screen.h - meme[memes].h);
-		for (int i = 0; i < memes - 1; i++) {
-			if (collideMeme(memes, i))
-				done = false;
-		}
+	meme[memes].w = rand() % 300 + 100;
+	meme[memes].h = rand() % 300 + 100;
+	switch (rand() % 4) {
+		case 0:
+			meme[memes].x = rand() % (screen.w - meme[memes].w);
+			meme[memes].y = 0 - meme[memes].h * 1.5;
+			break;
+		case 1:
+			meme[memes].x = screen.w + meme[memes].w * 1.5;
+			meme[memes].y = rand() % (screen.h - meme[memes].h);
+			break;
+		case 2:
+			meme[memes].x = rand() % (screen.w - meme[memes].w);
+			meme[memes].y = screen.h + meme[memes].h * 1.5;
+			break;
+		case 3:
+			meme[memes].x = 0 - meme[memes].h * 1.5;
+			meme[memes].y = rand() % (screen.h - meme[memes].h);
+			break;
 	}
 	meme[memes].timer = 0;
 	meme[memes].delay = 100;
@@ -78,13 +86,15 @@ void renderMeme(int i) {
 	meme[i].y += meme[i].vy;
 	SDL_SetWindowPosition(meme[i].window, meme[i].x, meme[i].y);
 
-	meme[i].timer = SDL_GetTicks() / meme[i].delay % meme[i].frames;
-	SDL_DestroyTexture(meme[i].texture);
-	meme[i].texture = IMG_LoadTexture_RW(meme[i].renderer, SDL_RWFromConstMem(meme[i].gif[meme[i].timer], meme[i].gif_len[meme[i].timer]), 1);
-	
-	SDL_RenderClear(meme[i].renderer);
-	SDL_RenderCopy(meme[i].renderer, meme[i].texture, NULL, NULL);
-	SDL_RenderPresent(meme[i].renderer);	
+	if (meme[i].x + meme[i].w > 0 && meme[i].x < screen.w && meme[i].y + meme[i].h > 0 && meme[i].y < screen.h) {
+		meme[i].timer = SDL_GetTicks() / meme[i].delay % meme[i].frames;
+		SDL_DestroyTexture(meme[i].texture);
+		meme[i].texture = IMG_LoadTexture_RW(meme[i].renderer, SDL_RWFromConstMem(meme[i].gif[meme[i].timer], meme[i].gif_len[meme[i].timer]), 1);
+		
+		SDL_RenderClear(meme[i].renderer);
+		SDL_RenderCopy(meme[i].renderer, meme[i].texture, NULL, NULL);
+		SDL_RenderPresent(meme[i].renderer);
+	}
 }
 
 int main(int argc, char** argv) {
