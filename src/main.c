@@ -31,24 +31,8 @@ void spawnMeme() {
 	meme[memes].vy = meme[memes].speed;
 	meme[memes].w = rand() % 300 + 100;
 	meme[memes].h = rand() % 300 + 100;
-	switch (rand() % 4) {
-		case 0:
-			meme[memes].x = rand() % (screen.w - meme[memes].w);
-			meme[memes].y = 0 - meme[memes].h * 1.5;
-			break;
-		case 1:
-			meme[memes].x = screen.w + meme[memes].w * 1.5;
-			meme[memes].y = rand() % (screen.h - meme[memes].h);
-			break;
-		case 2:
-			meme[memes].x = rand() % (screen.w - meme[memes].w);
-			meme[memes].y = screen.h + meme[memes].h * 1.5;
-			break;
-		case 3:
-			meme[memes].x = 0 - meme[memes].h * 1.5;
-			meme[memes].y = rand() % (screen.h - meme[memes].h);
-			break;
-	}
+	meme[memes].x = rand() % (screen.w - meme[memes].w);
+	meme[memes].y = rand() % (screen.h - meme[memes].h);
 	meme[memes].timer = 0;
 	meme[memes].delay = 100;
 	meme[memes].frames = (int)gifs_frames[tracklist[memes]];
@@ -62,17 +46,6 @@ void spawnMeme() {
 
 void renderMeme(int i) {
 	for (int j = 0; j < memes; j++) {
-		if (i != j) {
-			if (collideMeme(i, j)) {
-				double tmp = meme[i].vx;
-				meme[i].vx = meme[j].vx;
-				meme[j].vx = tmp;
-
-				tmp = meme[i].vy;
-				meme[i].vy = meme[j].vy;
-				meme[j].vy = tmp;
-			}
-		}
 		if (meme[i].x <= 0)
 			meme[i].vx = meme[i].speed;
 		else if (meme[i].x >= screen.w - meme[i].w)
@@ -86,15 +59,13 @@ void renderMeme(int i) {
 	meme[i].y += meme[i].vy;
 	SDL_SetWindowPosition(meme[i].window, meme[i].x, meme[i].y);
 
-	if (meme[i].x + meme[i].w > 0 && meme[i].x < screen.w && meme[i].y + meme[i].h > 0 && meme[i].y < screen.h) {
-		meme[i].timer = SDL_GetTicks() / meme[i].delay % meme[i].frames;
-		SDL_DestroyTexture(meme[i].texture);
-		meme[i].texture = IMG_LoadTexture_RW(meme[i].renderer, SDL_RWFromConstMem(meme[i].gif[meme[i].timer], meme[i].gif_len[meme[i].timer]), 1);
-		
-		SDL_RenderClear(meme[i].renderer);
-		SDL_RenderCopy(meme[i].renderer, meme[i].texture, NULL, NULL);
-		SDL_RenderPresent(meme[i].renderer);
-	}
+	meme[i].timer = SDL_GetTicks() / meme[i].delay % meme[i].frames;
+	SDL_DestroyTexture(meme[i].texture);
+	meme[i].texture = IMG_LoadTexture_RW(meme[i].renderer, SDL_RWFromConstMem(meme[i].gif[meme[i].timer], meme[i].gif_len[meme[i].timer]), 1);
+	
+	SDL_RenderClear(meme[i].renderer);
+	SDL_RenderCopy(meme[i].renderer, meme[i].texture, NULL, NULL);
+	SDL_RenderPresent(meme[i].renderer);
 }
 
 int main(int argc, char** argv) {
@@ -123,14 +94,14 @@ int main(int argc, char** argv) {
 	}
 
 	// Main Loop
-	SDL_Event event;
+	// SDL_Event event;
 	bool quit = false;
 	while (!quit) {
 		SDL_GetCurrentDisplayMode(0, &screen);
-		while (SDL_PollEvent(&event)) { // Comment for release, so you can't close it
-			if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
-				quit = true;
-		}
+		// while (SDL_PollEvent(&event)) { // Comment for release, so you can't close it
+		// 	if (event.type == SDL_QUIT || event.type == SDL_KEYDOWN && event.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
+		// 		quit = true;
+		// }
 
 		// Spawn a Window/Meme every 10 seconds
 		unsigned long ticks = SDL_GetTicks() / 10000;
